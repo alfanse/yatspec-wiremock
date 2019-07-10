@@ -11,6 +11,7 @@ import com.googlecode.yatspec.state.givenwhenthen.WithTestState;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,14 +30,17 @@ import static com.googlecode.yatspec.sequence.Participants.PARTICIPANT;
         SpecListener.class,
         SequenceDiagramExtension.class
 })
+//todo assert on the sequence diagram?
 class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipants {
 
     private static final int WIREMOCK_PORT = 8089;
 
     private static YatspecWiremockTrafficListener networkTrafficListener =
-            new YatspecWiremockTrafficListener(Map.of("/api/xxx", "apixxx"));
+            new YatspecWiremockTrafficListener(
+                    Map.of("/api/xxx", "apixxx"));
 
     private static WireMockServer wireMockServer = new WireMockServer(wireMockConfiguration());
+
     private static WireMockConfiguration wireMockConfiguration() {
         return options()
                 .port(WIREMOCK_PORT)
@@ -46,7 +50,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     private TestState testState = new TestState();
 
-    private Response response;
+    private Response when;
 
     @BeforeEach
     void setUp() {
@@ -58,37 +62,33 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     @Test
     void captureTrafficOnSingleGetRequest() {
-        stubGetWithJsonResponse();
+        givenWiremockStubsAvailable();
 
-        wireMockServer.start();
-
-        response =  RestAssured.given()
+        when = httpRequestWith()
                 .header("Authorization", "Bearer sometoken")
                 .get("/api/xxx");
 
         thenAssertResponseCorrect();
-
-        //todo assert on the sequence diagram?
     }
 
     @Test
     void captureTrafficOnMultipartGetRequest() {
-        stubGetWithJsonResponse();
+        givenWiremockStubsAvailable();
 
-        wireMockServer.start();
-
-        response =  RestAssured.given()
+        when = httpRequestWith()
                 .header("Authorization", "Bearer sometoken")
                 .contentType(ContentType.JSON)
                 .body("{\"requestKey\":\"response value\"}")
                 .get("/api/xxx");
 
         thenAssertResponseCorrect();
-
-        //todo assert on the sequence diagram?
     }
 
-    private void stubGetWithJsonResponse() {
+    private RequestSpecification httpRequestWith() {
+        return RestAssured.given();
+    }
+
+    private void givenWiremockStubsAvailable() {
         wireMockServer.stubFor(
                 get(urlPathMatching("/api/xxx"))
                         .withHeader("Authorization", equalTo("Bearer sometoken"))
@@ -97,10 +97,12 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
                                         .withHeader("Content-Type", "application/json; charset=utf-8")
                                         .withBody("{\"key\":\"value\"}")
                                         .withStatus(200)));
+
+        wireMockServer.start();
     }
 
     private void thenAssertResponseCorrect() {
-        response.then()
+        when.then()
                 .assertThat()
                 .statusCode(CoreMatchers.is(200))
                 .contentType(CoreMatchers.is("application/json; charset=utf-8"))
