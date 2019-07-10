@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api 'com.github.nickmcdowall:yatspec:release-2019.1.12'
+
+    testImplementation 'com.github.tomakehurst:wiremock:2.23.2'
+    testImplementation 'io.rest-assured:rest-assured:4.0.0'
+    testImplementation 'org.assertj:assertj-core:3.12.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+
+}
