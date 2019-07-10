@@ -32,17 +32,10 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
     private static final Set<String> protocols = Set.of("DELETE", "GET", "POST", "PUT");
 
     //plantUml no like '/' or '_', so map to pretty name.
-    private static final Map<String, String> targetNames = Map.of(
-            "/api/v2/current_user", "AuthCurrentUser",
-            "/ai-auth/v1/internal", "AuthInternal",
-            "/orchestrator/v1/data_subject/patient/111222", "Healthcheck");
+    private final Map<String, String> targetNames;
 
-    public YatspecWiremockTrafficListener(TestState testState) {
-        setYatspec(testState);
-    }
-
-    public YatspecWiremockTrafficListener() {
-
+    public YatspecWiremockTrafficListener(Map<String, String> targetNames) {
+        this.targetNames = targetNames;
     }
 
     //sometimes, need to pass testState in many times during lifetime of this instance.

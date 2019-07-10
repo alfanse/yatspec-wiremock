@@ -18,9 +18,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.googlecode.yatspec.sequence.Participants.ACTOR;
+import static com.googlecode.yatspec.sequence.Participants.PARTICIPANT;
 
 @ExtendWith({
         SpecListener.class,
@@ -28,25 +31,28 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 })
 class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipants {
 
-    public static final int WIREMOCK_PORT = 8089;
+    private static final int WIREMOCK_PORT = 8089;
 
     private static YatspecWiremockTrafficListener networkTrafficListener =
-            new YatspecWiremockTrafficListener();
+            new YatspecWiremockTrafficListener(Map.of("/api/xxx", "apixxx"));
 
     private static WireMockServer wireMockServer = new WireMockServer(wireMockConfiguration());
-    private Response response;
-
     private static WireMockConfiguration wireMockConfiguration() {
         return options()
                 .port(WIREMOCK_PORT)
                 .networkTrafficListener(networkTrafficListener);
     }
 
+
     private TestState testState = new TestState();
+
+    private Response response;
 
     @BeforeEach
     void setUp() {
         networkTrafficListener.setYatspec(testState);
+        networkTrafficListener.reset();
+
         RestAssured.baseURI = "http://localhost:" + WIREMOCK_PORT;
     }
 
@@ -108,7 +114,10 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     @Override
     public List<Participant> participants() {
-        return null;
+        return List.of(
+                ACTOR.create("App", "RestAssured"),
+                PARTICIPANT.create("apixxx", "Api XXX")
+        );
     }
 
     @Override
