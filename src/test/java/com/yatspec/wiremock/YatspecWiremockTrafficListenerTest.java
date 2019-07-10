@@ -9,6 +9,8 @@ import com.googlecode.yatspec.sequence.Participant;
 import com.googlecode.yatspec.state.givenwhenthen.TestState;
 import com.googlecode.yatspec.state.givenwhenthen.WithTestState;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +34,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
             new YatspecWiremockTrafficListener();
 
     private static WireMockServer wireMockServer = new WireMockServer(wireMockConfiguration());
+    private Response response;
 
     private static WireMockConfiguration wireMockConfiguration() {
         return options()
@@ -48,26 +51,54 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
     }
 
     @Test
-    void captureTrafficOnSingleGetRequestResponse() {
+    void captureTrafficOnSingleGetRequest() {
+        stubGetWithJsonResponse();
+
+        wireMockServer.start();
+
+        response =  RestAssured.given()
+                .header("Authorization", "Bearer sometoken")
+                .get("/api/xxx");
+
+        thenAssertResponseCorrect();
+
+        //todo assert on the sequence diagram?
+    }
+
+    @Test
+    void captureTrafficOnMultipartGetRequest() {
+        stubGetWithJsonResponse();
+
+        wireMockServer.start();
+
+        response =  RestAssured.given()
+                .header("Authorization", "Bearer sometoken")
+                .contentType(ContentType.JSON)
+                .body("{\"requestKey\":\"response value\"}")
+                .get("/api/xxx");
+
+        thenAssertResponseCorrect();
+
+        //todo assert on the sequence diagram?
+    }
+
+    private void stubGetWithJsonResponse() {
         wireMockServer.stubFor(
                 get(urlPathMatching("/api/xxx"))
                         .withHeader("Authorization", equalTo("Bearer sometoken"))
                         .willReturn(
                                 aResponse()
-                                        .withBody("{\"key\":\"value\"}")
                                         .withHeader("Content-Type", "application/json; charset=utf-8")
+                                        .withBody("{\"key\":\"value\"}")
                                         .withStatus(200)));
-        wireMockServer.start();
+    }
 
-        RestAssured.given()
-                .header("Authorization", "Bearer sometoken")
-                .get("/api/xxx")
-                .then()
+    private void thenAssertResponseCorrect() {
+        response.then()
                 .assertThat()
                 .statusCode(CoreMatchers.is(200))
                 .contentType(CoreMatchers.is("application/json; charset=utf-8"))
                 .body("key", CoreMatchers.is("value"));
-
     }
 
     @AfterEach
