@@ -21,8 +21,7 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String END_OF_RESPONSE = "0";
 
-    // overridden by test
-    private TestState yatspec = new TestState();
+    private TestState yatspec;
 
     private AtomicInteger requestCount = new AtomicInteger();
     private StringBuilder requestBuilder = new StringBuilder();
@@ -38,6 +37,15 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
             "/ai-auth/v1/internal", "AuthInternal",
             "/orchestrator/v1/data_subject/patient/111222", "Healthcheck");
 
+    public YatspecWiremockTrafficListener(TestState testState) {
+        setYatspec(testState);
+    }
+
+    public YatspecWiremockTrafficListener() {
+
+    }
+
+    //sometimes, need to pass testState in many times during lifetime of this instance.
     void setYatspec(TestState interactions) {
         this.yatspec = interactions;
     }

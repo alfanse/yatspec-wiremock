@@ -16,3 +16,9 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
 
 }
+
+test {
+    useJUnitPlatform()
+    systemProperty "yatspec.output.dir", "$buildDir/reports/yatspec"
+    outputs.upToDateWhen { false }
+}
