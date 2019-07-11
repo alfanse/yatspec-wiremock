@@ -1,6 +1,7 @@
 package com.yatspec.wiremock;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.googlecode.yatspec.junit.SequenceDiagramExtension;
 import com.googlecode.yatspec.junit.SpecListener;
@@ -44,7 +45,10 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
     private static WireMockConfiguration wireMockConfiguration() {
         return options()
                 .port(WIREMOCK_PORT)
+                //no compression please (can't render it)
+                .useChunkedTransferEncoding(Options.ChunkedEncodingPolicy.NEVER)
                 .networkTrafficListener(networkTrafficListener);
+//                .networkTrafficListener(new ConsoleNotifyingWiremockNetworkTrafficListener());
     }
 
 
