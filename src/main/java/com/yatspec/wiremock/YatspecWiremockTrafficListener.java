@@ -19,7 +19,6 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
     private static final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
     private static final String DEFAULT_TARGET = "Wiremock";
     private static final String CONTENT_LENGTH = "Content-Length";
-    private static final String END_OF_RESPONSE = "0";
 
     private TestState yatspec;
 
@@ -33,9 +32,12 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
 
     private static final Set<String> protocols = Set.of("DELETE", "GET", "POST", "PUT");
 
-    //plantUml no like '/' or '_', so map to pretty name.
     private final Map<String, String> targetNames;
 
+    /**
+     * @param targetNames - plantUml no like '/' or '_', so map to pretty name.
+     *                    targetNames.startsWith comparison
+     */
     public YatspecWiremockTrafficListener(Map<String, String> targetNames) {
         this.targetNames = targetNames;
     }
@@ -55,7 +57,7 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
         requestBuilder.append(request);
 
         if (isStartOfRequest(request)) {
-            target = extractTarget(request);
+            target = extractPath(request);
             requestContentLength = extractContentLength(request, requestContentLength);
         }
 
@@ -64,7 +66,7 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
             yatspec.log(format("request %s from App to %s", requestCount.get(), target),
                     requestBuilder.toString());
 
-            requestBuilder = new StringBuilder();
+            resetRequest();
         }
     }
 
@@ -76,11 +78,10 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
         responseContentLength = extractContentLength(response, responseContentLength);
 
         if (isEndOfResponse(response)) {
-            yatspec.log(format("response %s from %s to App", requestCount.get(), target),
+            yatspec.log(format("response %s from %s to App", responseCount.get(), target),
                     responseBuilder.toString());
 
-            responseBuilder = new StringBuilder();
-            requestContentLength = 0;
+            resetResponse();
         }
     }
 
@@ -89,9 +90,20 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
     }
 
     public void reset() {
+        resetRequest();
+        resetResponse();
+    }
+
+    private void resetRequest() {
         requestCount = new AtomicInteger();
         requestBuilder = new StringBuilder();
+        requestContentLength = 0;
+    }
+
+    private void resetResponse() {
+        responseCount = new AtomicInteger();
         responseBuilder = new StringBuilder();
+        responseContentLength = 0;
     }
 
     private boolean isStartOfRequest(String request) {
@@ -110,16 +122,24 @@ public class YatspecWiremockTrafficListener implements WiremockNetworkTrafficLis
     }
 
     private boolean isEndOfResponse(String response) {
-//        return response.trim().replaceAll(System.lineSeparator(), "").equals(END_OF_RESPONSE);
+        if (responseContentLength == 0) {
+            return true;
+        }
+
         return responseContentLength > 0
                 && responseCount.get() > 1
                 && response.trim().length() == responseContentLength;
     }
 
-    private String extractTarget(String request) {
+    private String extractPath(String request) {
         String requestPath = request.split(System.lineSeparator(), 2)[0];
-        String targetNamesKey = requestPath.split(" ")[1];
-        return targetNames.getOrDefault(targetNamesKey, DEFAULT_TARGET);
+        String path = requestPath.split(" ")[1];
+
+        return targetNames.keySet().stream()
+                .filter(path::startsWith)
+                .map(targetNames::get)
+                .findFirst()
+                .orElse(DEFAULT_TARGET);
     }
 
     private int extractContentLength(String request, int defaultContentLength) {
