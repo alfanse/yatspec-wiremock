@@ -61,7 +61,7 @@ class YatspecWiremockReqestListenerTest implements WithTestState, WithParticipan
 
 
     @Test
-    void name() {
+    void rendersRequestAndResponse() {
         stubs.givenWiremockStubsAvailable();
 
         when = httpRequestWith()

@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'com.adarshr.test-logger' version '1.7.0'
 }
 
 repositories {
@@ -21,4 +22,8 @@ test {
     useJUnitPlatform()
     systemProperty "yatspec.output.dir", "$buildDir/reports/yatspec"
     outputs.upToDateWhen { false }
+}
+
+testlogger {
+    theme 'mocha'
 }
