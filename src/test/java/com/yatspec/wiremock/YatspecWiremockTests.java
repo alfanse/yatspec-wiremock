@@ -5,8 +5,6 @@ import com.googlecode.yatspec.junit.SequenceDiagramExtension;
 import com.googlecode.yatspec.junit.SpecListener;
 import com.googlecode.yatspec.junit.WithParticipants;
 import com.googlecode.yatspec.sequence.Participant;
-import com.googlecode.yatspec.state.givenwhenthen.TestState;
-import com.googlecode.yatspec.state.givenwhenthen.WithTestState;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -14,6 +12,7 @@ import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -28,15 +27,13 @@ import static org.hamcrest.CoreMatchers.is;
         SequenceDiagramExtension.class
 })
 //todo assert on the sequence diagram?
-abstract class YatspecWiremockTests implements WithTestState, WithParticipants {
+abstract class YatspecWiremockTests implements WithParticipants {
 
     static final int WIREMOCK_PORT = 8089;
 
     abstract WireMockServer wireMockServer();
 
-    private TestState testState = new TestState();
-
-    private Stubs stubs = new Stubs(wireMockServer());
+    private Stubs stubs;
 
     private Response when;
 
@@ -46,16 +43,16 @@ abstract class YatspecWiremockTests implements WithTestState, WithParticipants {
     }
 
     @Override
-    public TestState testState() {
-        return testState;
-    }
-
-    @Override
     public List<Participant> participants() {
         return List.of(
                 ACTOR.create("App", "RestAssured"),
                 PARTICIPANT.create("apixxx", "Api XXX")
         );
+    }
+
+    @BeforeEach
+    void setupStubs() {
+        stubs = new Stubs(wireMockServer());
     }
 
     @AfterEach
@@ -135,7 +132,6 @@ abstract class YatspecWiremockTests implements WithTestState, WithParticipants {
     }
 
     private ValidatableResponse thenResponse() {
-        return when.then()
-                .assertThat();
+        return when.then().assertThat();
     }
 }

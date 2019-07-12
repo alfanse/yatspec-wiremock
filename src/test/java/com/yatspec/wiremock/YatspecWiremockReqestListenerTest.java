@@ -2,24 +2,36 @@ package com.yatspec.wiremock;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import io.restassured.RestAssured;
+import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.googlecode.yatspec.state.givenwhenthen.WithTestState;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
-class YatspecWiremockReqestListenerTest extends YatspecWiremockTests {
+class YatspecWiremockReqestListenerTest extends YatspecWiremockTests implements WithTestState {
 
-    private static WireMockServer wireMockServer = new WireMockServer(wireMockConfiguration());
+    private WireMockServer wireMockServer = new WireMockServer(wireMockConfiguration());
 
     private static WireMockConfiguration wireMockConfiguration() {
         return options().port(WIREMOCK_PORT);
     }
 
-    private YatspecWiremockReqestListener reqestListener = new YatspecWiremockReqestListener();
+    private YatspecWiremockReqestListener reqestListener = new YatspecWiremockReqestListener(
+            Map.of("/api/xxx", "apixxx",
+                    "/api/xxx/111222", "apixxx")
+    );
+
+    private TestState testState = new TestState();
+
+    @Override
+    public TestState testState() {
+        return testState;
+    }
 
     @BeforeEach
     void setUp() {
-        RestAssured.baseURI = "http://localhost:" + WIREMOCK_PORT;
         reqestListener.setYatspec(testState());
         wireMockServer.addMockServiceRequestListener(reqestListener);
     }

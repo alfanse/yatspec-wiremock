@@ -3,13 +3,15 @@ package com.yatspec.wiremock;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.googlecode.yatspec.state.givenwhenthen.TestState;
+import com.googlecode.yatspec.state.givenwhenthen.WithTestState;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
-class YatspecWiremockTrafficListenerTest extends YatspecWiremockTests {
+class YatspecWiremockTrafficListenerTest extends YatspecWiremockTests implements WithTestState {
 
     private static YatspecWiremockTrafficListener networkTrafficListener =
             new YatspecWiremockTrafficListener(
@@ -28,6 +30,13 @@ class YatspecWiremockTrafficListenerTest extends YatspecWiremockTests {
 //                .networkTrafficListener(new ConsoleNotifyingWiremockNetworkTrafficListener());
     }
 
+    private TestState testState = new TestState();
+
+    @Override
+    public TestState testState() {
+        return testState;
+    }
+
     @Override
     WireMockServer wireMockServer() {
         return wireMockServer;
@@ -35,7 +44,7 @@ class YatspecWiremockTrafficListenerTest extends YatspecWiremockTests {
 
     @BeforeEach
     void setUp() {
-        networkTrafficListener.setYatspec(testState());
+        networkTrafficListener.setYatspec(testState);
         networkTrafficListener.reset();
     }
 }
