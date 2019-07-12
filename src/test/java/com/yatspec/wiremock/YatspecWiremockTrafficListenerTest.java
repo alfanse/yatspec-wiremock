@@ -39,7 +39,8 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     private static YatspecWiremockTrafficListener networkTrafficListener =
             new YatspecWiremockTrafficListener(
-                    Map.of("/api/xxx", "apixxx")
+                    Map.of("/api/xxx", "apixxx",
+                            "/api/xxx/111222", "apixxx")
             );
 
     private static WireMockServer wireMockServer = new WireMockServer(wireMockConfiguration());
@@ -47,7 +48,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
     private static WireMockConfiguration wireMockConfiguration() {
         return options()
                 .port(WIREMOCK_PORT)
-                //no compression please (can't render it)
+                //no chunking please (can't render it)
                 .useChunkedTransferEncoding(Options.ChunkedEncodingPolicy.NEVER)
                 .networkTrafficListener(networkTrafficListener);
 //                .networkTrafficListener(new ConsoleNotifyingWiremockNetworkTrafficListener());
@@ -111,6 +112,21 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
         thenResponse().statusCode(is(404));
     }
+
+    @Test
+    void captureTrafficOfMultipleSerialRequests() {
+        givenWiremockStubsAvailable();
+
+        when = httpRequestWith()
+                .header("Authorization", "Bearer sometoken")
+                .contentType(ContentType.JSON)
+                .body("{\"requestKey\":\"request value\"}")
+                .post("api/xxx/111222");
+
+        when = httpRequestWith().get("/api/yyy");
+
+    }
+
 
     private RequestSpecification httpRequestWith() {
         return RestAssured.given();
