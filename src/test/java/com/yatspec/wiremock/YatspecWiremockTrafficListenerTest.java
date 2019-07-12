@@ -14,7 +14,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static com.googlecode.yatspec.sequence.Participants.ACTOR;
 import static com.googlecode.yatspec.sequence.Participants.PARTICIPANT;
@@ -57,6 +56,8 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     private TestState testState = new TestState();
 
+    private Stubs stubs = new Stubs(wireMockServer);
+
     private Response when;
 
     @BeforeEach
@@ -69,7 +70,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     @Test
     void captureTrafficOnGetWithNoBody() {
-        givenWiremockStubsAvailable();
+        stubs.givenWiremockStubsAvailable();
 
         when = httpRequestWith()
                 .header("Authorization", "Bearer sometoken")
@@ -80,7 +81,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     @Test
     void captureTrafficOnGetWithBody() {
-        givenWiremockStubsAvailable();
+        stubs.givenWiremockStubsAvailable();
 
         when = httpRequestWith()
                 .header("Authorization", "Bearer sometoken")
@@ -93,7 +94,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     @Test
     void captureTrafficOnPostWithBody() {
-        givenWiremockStubsAvailable();
+        stubs.givenWiremockStubsAvailable();
 
         when = httpRequestWith()
                 .header("Authorization", "Bearer sometoken")
@@ -106,7 +107,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     @Test
     void captureTrafficOnUnmatchedRequestShouldDefaultToWiremock() {
-        givenWiremockStubsAvailable();
+        stubs.givenWiremockStubsAvailable();
 
         when = httpRequestWith().get("/api/yyy");
 
@@ -115,7 +116,7 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
 
     @Test
     void captureTrafficOfMultipleSerialRequests() {
-        givenWiremockStubsAvailable();
+        stubs.givenWiremockStubsAvailable();
 
         when = httpRequestWith()
                 .header("Authorization", "Bearer sometoken")
@@ -132,28 +133,6 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
         return RestAssured.given();
     }
 
-    private void givenWiremockStubsAvailable() {
-        wireMockServer.stubFor(
-                get(urlPathMatching("/api/xxx"))
-                        .withHeader("Authorization", equalTo("Bearer sometoken"))
-                        .willReturn(
-                                aResponse()
-                                        .withHeader("Content-Type", "application/json; charset=utf-8")
-                                        .withBody("{\"key\":\"value\"}")
-                                        .withStatus(200)));
-
-        wireMockServer.stubFor(
-                post(urlPathMatching("/api/xxx/111222"))
-                        .withHeader("Authorization", equalTo("Bearer sometoken"))
-                        .willReturn(
-                                aResponse()
-                                        .withHeader("Content-Type", "application/json; charset=utf-8")
-                                        .withBody("{\"key\":\"value\"}")
-                                        .withStatus(200)));
-
-        wireMockServer.start();
-    }
-
     private void thenAssertResponseCorrect() {
         thenResponse()
                 .statusCode(is(200))
@@ -166,8 +145,8 @@ class YatspecWiremockTrafficListenerTest implements WithTestState, WithParticipa
                 .assertThat();
     }
 
-    @AfterEach
-    void tearDown() {
+    @AfterAll
+    static void tearDown() {
         wireMockServer.stop();
     }
 
