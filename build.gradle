@@ -1,7 +1,13 @@
 plugins {
     id 'java-library'
+    id 'maven'
     id 'com.adarshr.test-logger' version '1.7.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.10.1'
 }
+
+group = 'com.yatspec.wiremock'
+sourceCompatibility = '11'
+project.version = scmVersion.version
 
 repositories {
     mavenCentral()
@@ -9,8 +15,8 @@ repositories {
 }
 
 dependencies {
-    api 'com.github.nickmcdowall:yatspec:release-2019.1.12'
-    api 'com.github.tomakehurst:wiremock:2.23.2'
+    implementation 'com.github.nickmcdowall:yatspec:release-2019.1.12'
+    implementation 'com.github.tomakehurst:wiremock:2.23.2'
 
     testImplementation 'io.rest-assured:rest-assured:4.0.0'
     testImplementation 'org.assertj:assertj-core:3.12.2'

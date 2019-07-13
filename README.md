@@ -10,3 +10,9 @@ with example test: `com.yatspec.wiremock.YatspecWiremockReqestListenerTest`
 ### com.github.tomakehurst.wiremock.http.trafficlistener.WiremockNetworkTrafficListener
 implemented by: `com.yatspec.wiremock.YatspecWiremockTrafficListener`  
 with example test: `com.yatspec.wiremock.YatspecWiremockTrafficListenerTest`
+
+# Notes
+How to publish the jar to jitpack
+https://jitpack.io/docs/BUILDING/
+
+
