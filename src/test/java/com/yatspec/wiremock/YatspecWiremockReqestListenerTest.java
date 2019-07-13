@@ -20,8 +20,9 @@ class YatspecWiremockReqestListenerTest extends YatspecWiremockTests implements 
 
     private YatspecWiremockReqestListener reqestListener = new YatspecWiremockReqestListener(
             Map.of("/api/xxx", "apixxx",
-                    "/api/xxx/111222", "apixxx")
-    );
+                    "/api/xxx/111222", "apixxx"),
+            new RequestFormatter() {},
+            new ResponseFormatter() {});
 
     private TestState testState = new TestState();
 
