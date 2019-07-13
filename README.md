@@ -37,6 +37,6 @@ Tag the build: https://git-scm.com/book/en/v2/Git-Basics-Tagging
 `$ git tag -a v1.4 -m "my version 1.4"`
 
 push the tag  
-`$ git push origin --tags`
+`$ git push origin --tags`  
 
-wait fir jitpack to build, it uses `jitpack.yml`
+wait for jitpack to build, it uses `jitpack.yml`
