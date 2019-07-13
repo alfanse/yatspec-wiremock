@@ -7,11 +7,13 @@ Helping render sequence diagrams from the requests / responses of:
 
 ### com.github.tomakehurst.wiremock.http.RequestListener 
 implemented by `com.yatspec.wiremock.YatspecWiremockReqestListener`  
-with example test: `com.yatspec.wiremock.YatspecWiremockReqestListenerTest`
+example test: `com.yatspec.wiremock.YatspecWiremockReqestListenerTest`  
+example test output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)
 
 ### com.github.tomakehurst.wiremock.http.trafficlistener.WiremockNetworkTrafficListener
 implemented by: `com.yatspec.wiremock.YatspecWiremockTrafficListener`  
-with example test: `com.yatspec.wiremock.YatspecWiremockTrafficListenerTest`
+example test: `com.yatspec.wiremock.YatspecWiremockTrafficListenerTest`  
+example test output: testa output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)
 
 # add as dependency
 https://jitpack.io/#alfanse/yatspec-wiremock/0.1.0
