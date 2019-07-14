@@ -9,8 +9,8 @@ import java.util.function.Function;
 public interface ResponseFormatter extends Function<Response, String> {
 
     @Override
-    default String apply(Response Response){
-        LoggedResponse output = LoggedResponse.from(Response);
+    default String apply(Response response){
+        LoggedResponse output = LoggedResponse.from(response);
         return Json.write(output);    
     }
 }
