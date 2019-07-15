@@ -1,22 +1,25 @@
 # yatspec-wiremock
 
-[![](https://jitpack.io/v/alfanse/yatspec-wiremock.svg)](https://jitpack.io/#alfanse/yatspec-wiremock)
-
-Helping render sequence diagrams from the requests / responses of:  
+Helping render sequence diagrams from the requests / responses of a WireMockServer:  
 `com.github.tomakehurst.wiremock.WireMockServer`
 
 ### com.github.tomakehurst.wiremock.http.RequestListener 
 implemented by `com.yatspec.wiremock.YatspecWiremockReqestListener`  
 example test: `com.yatspec.wiremock.YatspecWiremockReqestListenerTest`  
-example test output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)
+example test output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)  
+
+This one works well.
 
 ### com.github.tomakehurst.wiremock.http.trafficlistener.WiremockNetworkTrafficListener
 implemented by: `com.yatspec.wiremock.YatspecWiremockTrafficListener`  
 example test: `com.yatspec.wiremock.YatspecWiremockTrafficListenerTest`  
 example test output: testa output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)
 
+This one is clumsy and only works for serial requests, has problems with chunked responses.
+
 # add as dependency
-https://jitpack.io/#alfanse/yatspec-wiremock/0.1.0
+
+[![](https://jitpack.io/v/alfanse/yatspec-wiremock.svg)](https://jitpack.io/#alfanse/yatspec-wiremock)
 
 Step 1. Add the JitPack repository to your build file  
 Add it in your root build.gradle at the end of repositories:  
@@ -30,7 +33,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.alfanse:yatspec-wiremock:0.1.0'
+	        implementation 'com.github.alfanse:yatspec-wiremock:0.1.1'
 	}
 
 # My Notes
