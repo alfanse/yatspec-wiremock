@@ -5,15 +5,15 @@ Helping render sequence diagrams from the requests / responses of a WireMockServ
 
 ### com.github.tomakehurst.wiremock.http.RequestListener 
 implemented by `com.yatspec.wiremock.YatspecWiremockReqestListener`  
-example test: `com.yatspec.wiremock.YatspecWiremockReqestListenerTest`  
+example test: [com.yatspec.wiremock.YatspecWiremockReqestListenerTest](https://github.com/alfanse/yatspec-wiremock/blob/master/src/test/java/com/yatspec/wiremock/YatspecWiremockReqestListenerTest.java)  
 example test output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)  
 
 This one works well.
 
 ### com.github.tomakehurst.wiremock.http.trafficlistener.WiremockNetworkTrafficListener
 implemented by: `com.yatspec.wiremock.YatspecWiremockTrafficListener`  
-example test: `com.yatspec.wiremock.YatspecWiremockTrafficListenerTest`  
-example test output: testa output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)
+example test: [com.yatspec.wiremock.YatspecWiremockTrafficListenerTest](https://github.com/alfanse/yatspec-wiremock/blob/master/src/test/java/com/yatspec/wiremock/YatspecWiremockTrafficListenerTest.java)  
+example test output: [YatspecWiremockReqestListenerTest.html](documentation/YatspecWiremockReqestListenerTest.html)
 
 This one is clumsy and only works for serial requests, has problems with chunked responses.
 
